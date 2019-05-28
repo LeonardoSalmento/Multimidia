@@ -6,12 +6,12 @@ host = '0.0.0.0'
 
 
 def RetrFile(name, sock):
-    filename = sock.recv(1024)
-    if os.path.isfile(filename):
-        sock.send(("EXISTS " + str(os.path.getsize(filename.decode()))).encode())
+    nomeArquivo = sock.recv(1024)
+    if os.path.isfile(nomeArquivo):
+        sock.send(("EXISTS " + str(os.path.getsize(nomeArquivo.decode()))).encode())
         userResponse = (sock.recv(1024)).decode()
         if userResponse[:2] == 'OK':
-            with open(filename, 'rb') as f:
+            with open(nomeArquivo, 'rb') as f:
                 bytesToSend = f.read(1024)
                 sock.send(bytesToSend)
                 while bytesToSend != "".encode():
@@ -37,13 +37,13 @@ def tcpFileTransfer():
     s.close()
 
 def RetrFileUDP(name, sock):
-    filename, addr = sock.recvfrom(1024)
-    if os.path.isfile(filename):
-        sock.sendto(("EXISTS " + str(os.path.getsize(filename.decode()))).encode(), addr)
+    nomeArquivo, addr = sock.recvfrom(1024)
+    if os.path.isfile(nomeArquivo):
+        sock.sendto(("EXISTS " + str(os.path.getsize(nomeArquivo.decode()))).encode(), addr)
         userResponse, addr = sock.recvfrom(1024)
         userResponse = (userResponse).decode()
         if userResponse[:2] == 'OK':
-            with open(filename, 'rb') as f:
+            with open(nomeArquivo, 'rb') as f:
                 bytesToSend = f.read(1024)
                 sock.sendto(bytesToSend, addr)
                 while bytesToSend != "".encode():
@@ -55,9 +55,9 @@ def RetrFileUDP(name, sock):
     sock.close()
 
 def udpFileTransfer():
-    port = 5000
+    porta = 5000
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    s.bind((host,port))
+    s.bind((host,porta))
     print("Servidor iniciado.")
     RetrFileUDP("retrifile",s)
     
@@ -75,7 +75,7 @@ def Main():
         elif(option2 =='S'):
             break
         else:
-            print('Invalid option')
+            print('Opção invalida.')
             
 
 if __name__ == '__main__' :

@@ -16,24 +16,24 @@ def transferenciaTcp():
     s.connect((host, porta))
 
 
-    filename = input("Qual o nome do arquivo? -> ").encode()
-    if filename != 'q'.encode():
-        s.send(filename)
+    nomeArquivo = input("Qual o nome do arquivo? -> ").encode()
+    if nomeArquivo != 'q'.encode():
+        s.send(nomeArquivo)
         data = s.recv(1024)
         if data[:6] == 'EXISTS'.encode():
-            filesize = int(data[6:].decode())
-            message = input("O arquivo possui tamanho = " + str(filesize) +"Bytes, Deseja enviar? (S/N)? -> ")
-            if message == 'S':
+            tamanhoArquivo = int(data[6:].decode())
+            mensagem = input("O arquivo possui tamanho = " + str(tamanhoArquivo) +"Bytes, Deseja enviar? (S/N)? -> ")
+            if mensagem == 'S':
                 s.send("OK".encode())
-                f = open('new_'+filename.decode(), 'wb')
+                f = open('new_'+nomeArquivo.decode(), 'wb')
                 data = s.recv(1024)
                 totalRecv = len(data)
                 f.write(data)
-                while totalRecv < filesize:
+                while totalRecv < tamanhoArquivo:
                     data = s.recv(1024)
                     totalRecv += len(data)
                     f.write(data)
-                    print("{0:.2f}".format((totalRecv/float(filesize))*100)+ "% Done", end='\r')
+                    print("{0:.2f}".format((totalRecv/float(tamanhoArquivo))*100)+ "% Done", end='\r')
                 print("Arquivo Enviado!")
                 f.close()
         else:
@@ -48,24 +48,24 @@ def transferenciaUdp():
 
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
-    filename = input("Qual o nome do arquivo? -> ").encode()
-    if filename != 'q'.encode():
-        s.sendto(filename,server)
+    nomeArquivo = input("Qual o nome do arquivo? -> ").encode()
+    if nomeArquivo != 'q'.encode():
+        s.sendto(nomeArquivo,server)
         data, addr = s.recvfrom(1024)
         if data[:6] == 'EXISTS'.encode():
-            filesize = int(data[6:].decode())
-            message = input("O arquivo possui tamanho = " + str(filesize) +"Bytes, Deseja enviar? (S/N)? -> ")
-            if message == 'S':
+            tamanhoArquivo = int(data[6:].decode())
+            mensagem = input("O arquivo possui tamanho = " + str(tamanhoArquivo) +"Bytes, Deseja enviar? (S/N)? -> ")
+            if mensagem == 'S':
                 s.sendto("OK".encode(), addr)
-                f = open('new_'+filename.decode(), 'wb')
+                f = open('new_'+nomeArquivo.decode(), 'wb')
                 data, addr = s.recvfrom(1024)
                 totalRecv = len(data)
                 f.write(data)
-                while totalRecv < filesize:
+                while totalRecv < tamanhoArquivo:
                     data, addr = s.recvfrom(1024)
                     totalRecv += len(data)
                     f.write(data)
-                    print("{0:.2f}".format((totalRecv/float(filesize))*100)+ "% Done", end='\r')
+                    print("{0:.2f}".format((totalRecv/float(tamanhoArquivo))*100)+ "% Done", end='\r')
                 print("Arquivo Enviado!")
                 f.close()
         else:
@@ -82,27 +82,21 @@ def taxaTransferencia(ip, porta):
     tcp.send(teste.encode())
     end = time.time()
     tcp.close()
-    time_to_send = (end-begin)
-    transferRatio = 8/time_to_send
+    tempoEnvio = (end-begin)
+    velocidadeTransferencia = 8/tempoEnvio
 
-    if transferRatio>100:
+    print("A taxa de transferencia da rede " + velocidadeTransferencia)
+
+    if velocidadeTransferencia>100:
         print("A melhor opção, é utilizar o TCP")
         transferenciaUdp()
     else:
         print("A melhor opção é utilizar o UDP")
         transferenciaUdp()
 
-    return transferRatio
-
 
 def Main():
     taxaTransferencia('127.0.0.1',6000)
-
-
-
-
-
-
 
 
 if __name__ == '__main__' :
