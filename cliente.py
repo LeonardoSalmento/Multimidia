@@ -85,18 +85,27 @@ def taxaTransferencia(ip, porta):
     tempoEnvio = (end-begin)
     velocidadeTransferencia = 8/tempoEnvio
 
-    print("A taxa de transferencia da rede " + velocidadeTransferencia)
+    print("A taxa de transferencia da rede %.2f"  % velocidadeTransferencia)
 
     if velocidadeTransferencia>100:
         print("A melhor opção, é utilizar o TCP")
-        transferenciaUdp()
+        transferenciaTcp()
     else:
         print("A melhor opção é utilizar o UDP")
         transferenciaUdp()
 
 
+def ping():
+    cmd = "ping -c4 " + host
+    r = "".join(os.popen(cmd).readlines())
+    print (r)
+
+
 def Main():
     taxaTransferencia('127.0.0.1',6000)
+    ping()
+
+
 
 
 if __name__ == '__main__' :
